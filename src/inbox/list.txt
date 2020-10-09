@@ -6,3 +6,9 @@ read
 a
 a
 .
+
+quit
+if19b022list
+send
+if19b022
+.

@@ -22,8 +22,7 @@ int main(int argc, char **argv)
 	socklen_t addrlen;
 	struct sockaddr_in address, cliaddress;
 
-	char sen_uname[8], rec_uname[8], username[8];
-	char subject[80];
+	char sender[8], reciever[8], username[8], subject[80];
 	char filename[0x100];
 	char text[BUF];
 	FILE *fp;
@@ -106,16 +105,46 @@ int main(int argc, char **argv)
          {
 		// remove ugly debug message, because of the sent newline
 		if(buffer[size-1] == '\n') {
-		--size;
+			--size;
 		}
 
 		buffer[size] = '\0';
 		printf("User selected %s option.\n", buffer);
 		//if send option is selected
 		if( strcmp( buffer, "send") == 0){
-			//read senders username
-			sen_size = recv(new_socket, sen_uname, BUF - 1, 0);
-			if( sen_size > 0){
+			memset(buffer, 0, sizeof(buffer));
+			size = recv(new_socket, buffer, BUF - 1, 0);
+			strcpy( sender, buffer);
+			printf("%s", sender);
+			printf("%d\n", size);
+
+			memset(buffer, 0, sizeof(buffer));
+			size = recv(new_socket, buffer, BUF - 1, 0);
+			strcpy( reciever, buffer);
+			printf("%s", reciever);
+			printf("%d\n", size);
+
+			memset(buffer, 0, sizeof(buffer));
+			size = recv(new_socket, buffer, BUF - 1, 0);
+			strcpy( subject, buffer);
+			printf("%s", subject);
+			printf("%d\n", size);
+
+			
+
+
+
+
+
+
+
+
+
+
+
+			//printf("%s", sen_uname);
+
+			/*if( sen_size > 0){
 				if(sen_uname[sen_size-1] == '\n') {
 					--sen_size;
 				}
@@ -197,11 +226,11 @@ int main(int argc, char **argv)
 				printf("error sending\n");
 			}
 			send(new_socket, "OK\n", 3, 0);
-			fclose(fp);
+			fclose(fp);*/
 		}else if( strcmp( buffer, "list") == 0){
 			
 			//read senders username
-			uname_size = recv(new_socket, username, BUF - 1, 0);
+			/*uname_size = recv(new_socket, username, BUF - 1, 0);
 			if( uname_size > 0){
 				if(username[uname_size-1] == '\n') {
 					--uname_size;
@@ -221,7 +250,7 @@ printf("%s", filename);
 			}else{
 				send(new_socket, "ERR\n", 4, 0);
 				printf("error sending\n");
-			}
+			}*/
 
 		}else if( strcmp( buffer, "read") == 0){
 			printf("read...\n");

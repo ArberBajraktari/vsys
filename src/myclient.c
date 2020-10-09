@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 {
 	int create_socket;
 	char buffer[BUF];
-	char sender[8];
+	char sender[8], reciever[8], subject[80], msg[BUF];
 	struct sockaddr_in address;
 	int size;
 
@@ -91,19 +91,51 @@ int main(int argc, char **argv)
 		send(create_socket, buffer, strlen(buffer), 0);
 		printf("%s", buffer);
 		if( strcmp( buffer, "send\n") == 0){
-			do{
-				printf(" 8 char pls\nSender: ");
-				scanf( "%s", sender);
-				size = strlen(sender);
-			}while( size != 8);
-		}else if( strcmp( buffer, "list\n") == 0){
-			if( fgets( buffer, BUF, stdin) != NULL){
-				if( strlen( buffer) != 9){
-					printf("Enter an username with 8 characters!\n");
-				}else{
-					printf("ok");
+			memset( sender, 0, sizeof( sender));
+			while(1){
+				if( fgets( sender, BUF, stdin) != NULL){
+					if( strlen( sender) != 9){
+						printf("Enter an username with 8 characters!\n");
+					}else{
+						send(create_socket, sender, strlen(sender), 0);
+						break;
+					}
 				}
 			}
+			memset( reciever, 0, sizeof( reciever));
+			while(1){
+				if( fgets( reciever, BUF, stdin) != NULL){
+					if( strlen( reciever) != 9){
+						printf("Enter an username with 8 characters!\n");
+					}else{
+						send(create_socket, reciever, strlen(reciever), 0);
+						break;
+					}
+				}
+			}
+			memset( subject, 0, sizeof( subject));
+			while(1){
+				if( fgets( subject, BUF, stdin) != NULL){
+					if( strlen( subject) > 80){
+						printf("Enter an Subject with less than 80 characters!\n");
+					}else{
+						send(create_socket, subject, strlen(subject), 0);
+						break;
+					}
+				}
+			}
+		}else if( strcmp( buffer, "list\n") == 0){
+			while(1){
+				if( fgets( buffer, BUF, stdin) != NULL){
+					if( strlen( buffer) != 9){
+						printf("Enter an username with 8 characters!\n");
+					}else{
+						break;
+					}
+				}
+			}
+
+			
 		}else if( strcmp( buffer, "read\n") == 0){
 			if( fgets( buffer, BUF, stdin) != NULL){
 				if( strlen( buffer) != 9){

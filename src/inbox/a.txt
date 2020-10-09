@@ -16,3 +16,15 @@ send
 a
 a
 .
+if19b022a
+quit
+if19b02
+send
+if19b02
+.
+if19b022a
+quir
+qui
+.
+if19b022a
+quit
