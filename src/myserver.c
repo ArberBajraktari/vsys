@@ -22,7 +22,7 @@ int main(int argc, char **argv)
 	socklen_t addrlen;
 	struct sockaddr_in address, cliaddress;
 
-	char sender[8], reciever[8], username[8], subject[80];
+	char sender_temp[8], sender[8], reciever[8], username[8], subject[80];
 	char filename[0x100];
 	char msg[BUF];
 	FILE *fp;
@@ -112,39 +112,19 @@ int main(int argc, char **argv)
 		printf("User selected %s option.\n", buffer);
 		//if send option is selected
 		if( strcmp( buffer, "send") == 0){
-			memset(buffer, 0, sizeof(buffer));
-			size = recv(new_socket, buffer, BUF - 1, 0);
-			strcpy( sender, buffer);
-			printf("%s", sender);
-			printf("%d\n", size);
+			//tek sender shtohet stringu i recieverit...
+			memset(sender, 0, sizeof(sender));
+			size = recv(new_socket, sender, 9, 0);
 
-			memset(buffer, 0, sizeof(buffer));
-			size = recv(new_socket, buffer, BUF - 1, 0);
-			strcpy( reciever, buffer);
-			printf("%s", reciever);
-			printf("%d\n", size);
+			memset(reciever, 0, sizeof(reciever));
+			size = recv(new_socket, reciever, 9, 0);
 
-			memset(buffer, 0, sizeof(buffer));
-			size = recv(new_socket, buffer, BUF - 1, 0);
-			strcpy( subject, buffer);
-			printf("%s", subject);
-			printf("%d\n", size);
+			memset(subject, 0, sizeof(subject));
+			size = recv(new_socket, subject, 80, 0);
 			
-			memset(buffer, 0, sizeof(buffer));
-			size = recv(new_socket, buffer, BUF - 1, 0);
-			strcpy( msg, buffer);
-			printf("%s", msg);
-			printf("%d\n", size);
-
 			
-
-
-
-
-
-
-
-
+			memset(msg, 0, sizeof(msg));
+			size = recv(new_socket, msg, BUF - 1, 0);
 
 
 

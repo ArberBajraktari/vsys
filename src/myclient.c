@@ -128,12 +128,11 @@ int main(int argc, char **argv)
 			memset( msg, 0, sizeof( msg));
 			while(1){
 				if( fgets( msg_temp, BUF, stdin) != NULL){
+					strcat(msg, msg_temp);
 					if( strstr( msg_temp, ".") != 0){
 						send(create_socket, msg, strlen(msg), 0);
 						printf(". is in!\n");
 						break;
-					}else{
-						strcat(msg, msg_temp);			
 					}
 				}
 			}

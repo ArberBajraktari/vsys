@@ -1,6 +1,0 @@
-if19b02
-send
-if19b022
-.
-if19b02
-quit
