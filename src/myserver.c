@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 
 	char sender[8], reciever[8], username[8], subject[80];
 	char filename[0x100];
-	char text[BUF];
+	char msg[BUF];
 	FILE *fp;
 	
 
@@ -128,6 +128,12 @@ int main(int argc, char **argv)
 			size = recv(new_socket, buffer, BUF - 1, 0);
 			strcpy( subject, buffer);
 			printf("%s", subject);
+			printf("%d\n", size);
+			
+			memset(buffer, 0, sizeof(buffer));
+			size = recv(new_socket, buffer, BUF - 1, 0);
+			strcpy( msg, buffer);
+			printf("%s", msg);
 			printf("%d\n", size);
 
 			

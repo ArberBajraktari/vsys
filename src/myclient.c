@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 {
 	int create_socket;
 	char buffer[BUF];
-	char sender[8], reciever[8], subject[80], msg[BUF];
+	char sender[8], reciever[8], subject[80], msg[BUF], msg_temp[BUF];
 	struct sockaddr_in address;
 	int size;
 
@@ -124,6 +124,20 @@ int main(int argc, char **argv)
 					}
 				}
 			}
+			memset( msg_temp, 0, sizeof( msg_temp));
+			memset( msg, 0, sizeof( msg));
+			while(1){
+				if( fgets( msg_temp, BUF, stdin) != NULL){
+					if( strstr( msg_temp, ".") != 0){
+						send(create_socket, msg, strlen(msg), 0);
+						printf(". is in!\n");
+						break;
+					}else{
+						strcat(msg, msg_temp);			
+					}
+				}
+			}
+			// list ---------------------------------------------
 		}else if( strcmp( buffer, "list\n") == 0){
 			while(1){
 				if( fgets( buffer, BUF, stdin) != NULL){
