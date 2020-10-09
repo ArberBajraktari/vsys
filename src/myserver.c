@@ -18,11 +18,11 @@ int main(int argc, char **argv)
 {
 	int create_socket, new_socket;
 	char buffer[BUF];
-	int size, sen_size, rec_size, sub_size, text_size;
+	int size, sen_size, rec_size, sub_size, text_size, uname_size;
 	socklen_t addrlen;
 	struct sockaddr_in address, cliaddress;
 
-	char sen_uname[8], rec_uname[8];
+	char sen_uname[8], rec_uname[8], username[8];
 	char subject[80];
 	char filename[0x100];
 	char text[BUF];
@@ -110,15 +110,17 @@ int main(int argc, char **argv)
 		}
 
 		buffer[size] = '\0';
+		printf("User selected %s option.\n", buffer);
 		//if send option is selected
 		if( strcmp( buffer, "send") == 0){
 			//read senders username
 			sen_size = recv(new_socket, sen_uname, BUF - 1, 0);
 			if( sen_size > 0){
 				if(sen_uname[sen_size-1] == '\n') {
-				--sen_size;
+					--sen_size;
 				}
-				sen_uname[sen_size] = '\0';
+				sen_uname[sen_size] = '\0';			
+				printf("%s", sen_uname);
 				//senders username is read 					correctly			
 			}else{
 				send(new_socket, "ERR\n", 4, 0);
@@ -136,7 +138,7 @@ int main(int argc, char **argv)
 				//ready to save to inbox
 
 				snprintf(filename, sizeof(filename), "inbox/%s.txt", 						rec_uname);
-				fp=fopen(filename,"a");
+				fp = fopen(filename,"a");
 				if( fp == NULL){
 					printf("s");
 				}
@@ -197,13 +199,34 @@ int main(int argc, char **argv)
 			send(new_socket, "OK\n", 3, 0);
 			fclose(fp);
 		}else if( strcmp( buffer, "list") == 0){
-			printf("list...\n");
+			
+			//read senders username
+			uname_size = recv(new_socket, username, BUF - 1, 0);
+			if( uname_size > 0){
+				if(username[uname_size-1] == '\n') {
+					--uname_size;
+				}
+				username[uname_size] = '\0';
+				
+				//senders username is read 					correctly
+				snprintf(filename, sizeof(filename), "inbox/%s.txt", 						username);
+				fp = fopen( filename, "r");
+printf("%s", filename);
+				if( fp == NULL ){
+					printf("empty");
+				}else{
+					printf("not empty");
+				}
+				printf("%s", sen_uname);			
+			}else{
+				send(new_socket, "ERR\n", 4, 0);
+				printf("error sending\n");
+			}
+
 		}else if( strcmp( buffer, "read") == 0){
 			printf("read...\n");
 		}else if( strcmp( buffer, "del") == 0){
 			printf("del...\n");
-		}else{
-			printf("cmd not known\n");
 		}
 
          }

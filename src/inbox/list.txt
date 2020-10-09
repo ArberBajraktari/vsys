@@ -1,0 +1,8 @@
+send
+list
+read
+.
+
+a
+a
+.

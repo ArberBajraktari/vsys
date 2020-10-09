@@ -16,10 +16,12 @@
 
 int main(int argc, char **argv)
 {
-   int create_socket;
-   char buffer[BUF];
-   struct sockaddr_in address;
-   int size;
+	int create_socket;
+	char buffer[BUF];
+	char sender[8];
+	struct sockaddr_in address;
+	int size;
+
 
    ////////////////////////////////////////////////////////////////////////////
    // CREATE A SOCKET
@@ -87,8 +89,43 @@ int main(int argc, char **argv)
 		// SEND DATA
 		// https://man7.org/linux/man-pages/man2/send.2.html
 		send(create_socket, buffer, strlen(buffer), 0);
+		printf("%s", buffer);
 		if( strcmp( buffer, "send\n") == 0){
-			printf("Sender username: ");
+			do{
+				printf(" 8 char pls\nSender: ");
+				scanf( "%s", sender);
+				size = strlen(sender);
+			}while( size != 8);
+		}else if( strcmp( buffer, "list\n") == 0){
+			if( fgets( buffer, BUF, stdin) != NULL){
+				if( strlen( buffer) != 9){
+					printf("Enter an username with 8 characters!\n");
+				}else{
+					printf("ok");
+				}
+			}
+		}else if( strcmp( buffer, "read\n") == 0){
+			if( fgets( buffer, BUF, stdin) != NULL){
+				if( strlen( buffer) != 9){
+					printf("Enter an username with 8 characters!\n");
+				}else{
+					printf("ok");
+				}
+			}
+		}else if( strcmp( buffer, "del\n") == 0){
+			if( fgets( buffer, BUF, stdin) != NULL){
+				if( strlen( buffer) != 9){
+					printf("Enter an username with 8 characters!\n");
+				}else{
+					printf("ok");
+				}
+			}
+		}
+		/*
+		//////////////////
+		// send
+		//////////////////
+		
 			fgets(buffer, BUF, stdin);
 			send(create_socket, buffer, strlen(buffer), 0);
 			printf("Reciever username: ");
@@ -109,16 +146,30 @@ int main(int argc, char **argv)
 				printf("cant read");
 			}
 
-		}else if( strcmp( buffer, "list\n") == 0){
-			printf("list...\n");
-		}else if( strcmp( buffer, "read\n") == 0){
-			printf("read...\n");
-		}else if( strcmp( buffer, "del\n") == 0){
-			printf("del...\n");
-		}else{
-			printf("cmd not known\n");
 		}
+		//////////////////
+		// list
+		//////////////////		
+		else if( strcmp( buffer, "list\n") == 0){
+			printf("Username: ");
+			scanf(" %s", buffer);
+			send(create_socket, buffer, strlen(buffer), 0);
+		}
+		//////////////////
+		// read
+		//////////////////
+		else if( strcmp( buffer, "read\n") == 0){
+			printf("read...\n");
+		}
+		//////////////////
+		// del
+		//////////////////
+		else if( strcmp( buffer, "del\n") == 0){
+			printf("del...\n");
+		}
+*/
       }
+	
    } while (strcmp(buffer, "quit\n") != 0);
 
    ////////////////////////////////////////////////////////////////////////////

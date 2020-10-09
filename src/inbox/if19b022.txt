@@ -1,0 +1,9 @@
+list
+list
+quit
+.
+send
+
+send
+send
+quit
