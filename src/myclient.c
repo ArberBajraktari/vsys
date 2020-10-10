@@ -17,7 +17,7 @@
 int main(int argc, char **argv)
 {
 	int create_socket;
-	char buffer[BUF];
+	char buffer[BUF], to_send[BUF];
 	char sender[8], reciever[8], subject[80], msg[BUF], msg_temp[BUF];
 	struct sockaddr_in address;
 	int size;
@@ -83,6 +83,8 @@ int main(int argc, char **argv)
    do
    {
       printf("Send message: ");
+      memset( buffer, 0, sizeof( buffer));
+      memset( to_send, 0, sizeof( to_send));
       if (fgets(buffer, BUF, stdin) != NULL)
       {
 		//////////////////////////////////////////////////////////////////////
@@ -97,7 +99,10 @@ int main(int argc, char **argv)
 					if( strlen( sender) != 9){
 						printf("Enter an username with 8 characters!\n");
 					}else{
-						send(create_socket, sender, strlen(sender), 0);
+						sender[8] = '\0';
+						strcat( to_send, sender);
+						strcat( to_send, ";");
+						
 						break;
 					}
 				}
@@ -108,7 +113,10 @@ int main(int argc, char **argv)
 					if( strlen( reciever) != 9){
 						printf("Enter an username with 8 characters!\n");
 					}else{
-						send(create_socket, reciever, strlen(reciever), 0);
+						reciever[8] = '\0';
+						strcat( to_send, reciever);
+						strcat( to_send, ";");
+						
 						break;
 					}
 				}
@@ -119,7 +127,10 @@ int main(int argc, char **argv)
 					if( strlen( subject) > 80){
 						printf("Enter an Subject with less than 80 characters!\n");
 					}else{
-						send(create_socket, subject, strlen(subject), 0);
+						subject[strlen(subject) - 1] = '\0';
+						strcat( to_send, subject);
+						strcat( to_send, ";");
+				
 						break;
 					}
 				}
@@ -130,12 +141,14 @@ int main(int argc, char **argv)
 				if( fgets( msg_temp, BUF, stdin) != NULL){
 					strcat(msg, msg_temp);
 					if( strstr( msg_temp, ".") != 0){
-						send(create_socket, msg, strlen(msg), 0);
-						printf(". is in!\n");
+						strcat( to_send, msg);
+						send(create_socket, to_send, strlen(to_send), 0);
 						break;
 					}
 				}
+				
 			}
+			
 			// list ---------------------------------------------
 		}else if( strcmp( buffer, "list\n") == 0){
 			while(1){

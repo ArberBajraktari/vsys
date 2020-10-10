@@ -22,9 +22,11 @@ int main(int argc, char **argv)
 	socklen_t addrlen;
 	struct sockaddr_in address, cliaddress;
 
-	char sender_temp[8], sender[8], reciever[8], username[8], subject[80];
 	char filename[0x100];
-	char msg[BUF];
+	char * msg;
+	char * sender;
+	char * reciever;
+	char * subject;
 	FILE *fp;
 	
 
@@ -113,18 +115,34 @@ int main(int argc, char **argv)
 		//if send option is selected
 		if( strcmp( buffer, "send") == 0){
 			//tek sender shtohet stringu i recieverit...
-			memset(sender, 0, sizeof(sender));
-			size = recv(new_socket, sender, 9, 0);
-
-			memset(reciever, 0, sizeof(reciever));
-			size = recv(new_socket, reciever, 9, 0);
-
-			memset(subject, 0, sizeof(subject));
-			size = recv(new_socket, subject, 80, 0);
+			memset(buffer, 0, sizeof(buffer));
+			size = recv(new_socket, buffer, BUF - 1, 0);
+			printf("%s", buffer);
+			sender = strtok( buffer, ";");
+			printf("%s\n", sender);
+			reciever = strtok( NULL, ";");
+			printf("%s\n", reciever);
+			subject = strtok( NULL, ";");
+			printf("%s\n", subject);
+			msg = strtok( NULL, ".");
+			printf("%s\n", msg);
 			
-			
-			memset(msg, 0, sizeof(msg));
-			size = recv(new_socket, msg, BUF - 1, 0);
+			snprintf(filename, sizeof(filename), "inbox/%s.txt", reciever);
+			fp = fopen(filename,"a");
+			if( fp == NULL){
+				send(new_socket, "ERR\n", strlen(buffer), 0);
+			}
+			fputs("New Email;", fp);
+			fputs(";\n", fp);
+			fputs( sender, fp);
+			fputs(";\n", fp);
+			fputs( reciever, fp);
+			fputs(";\n", fp);
+			fputs( subject, fp);
+			fputs(";\n", fp);
+			fputs( msg, fp);
+			fputs(";\n", fp);
+			fflush(fp);
 
 
 
