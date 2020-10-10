@@ -17,8 +17,8 @@
 int main(int argc, char **argv)
 {
 	int create_socket, new_socket;
-	char buffer[BUF];
-	int size, sen_size, rec_size, sub_size, text_size, uname_size;
+	int size;
+	char buffer[BUF], temp[BUF];
 	socklen_t addrlen;
 	struct sockaddr_in address, cliaddress;
 
@@ -27,6 +27,7 @@ int main(int argc, char **argv)
 	char * sender;
 	char * reciever;
 	char * subject;
+	int cnt = 0;
 	FILE *fp;
 	
 
@@ -113,7 +114,7 @@ int main(int argc, char **argv)
 		printf("User selected %s option.\n", buffer);
 		//if send option is selected
 		if( strcmp( buffer, "send") == 0){
-			//tek sender shtohet stringu i recieverit...
+			
 			memset(buffer, 0, sizeof(buffer));
 			size = recv(new_socket, buffer, BUF - 1, 0);
 			printf("Recieved message from user!\n");
@@ -128,11 +129,11 @@ int main(int argc, char **argv)
 				send(new_socket, "ERR\n", 4, 0);
 			}else{
 				fputs("New Email", fp);
-				fputs(";\n", fp);
+				fputs(";\nSender:", fp);
 				fputs( sender, fp);
-				fputs(";\n", fp);
+				fputs(";\nSubject:", fp);
 				fputs( subject, fp);
-				fputs(";\n", fp);
+				fputs(";\nMsg:", fp);
 				fputs( msg, fp);
 				fputs(";\n", fp);
 				fflush(fp);
@@ -141,29 +142,36 @@ int main(int argc, char **argv)
 			}
 			
 		}else if( strcmp( buffer, "list") == 0){
-			
-			//read senders username
-			/*uname_size = recv(new_socket, username, BUF - 1, 0);
-			if( uname_size > 0){
-				if(username[uname_size-1] == '\n') {
-					--uname_size;
-				}
-				username[uname_size] = '\0';
-				
-				//senders username is read 					correctly
-				snprintf(filename, sizeof(filename), "inbox/%s.txt", 						username);
-				fp = fopen( filename, "r");
-printf("%s", filename);
-				if( fp == NULL ){
-					printf("empty");
-				}else{
-					printf("not empty");
-				}
-				printf("%s", sen_uname);			
+			memset(buffer, 0, sizeof(buffer));
+			size = recv(new_socket, buffer, BUF - 1, 0);
+			snprintf(filename, sizeof(filename), "inbox/%s.txt", buffer);
+			printf("Recieved message from user!\n");
+			fp = fopen(filename,"r");
+			if(fp == NULL){
+				send(new_socket, "0", 1, 0);
 			}else{
-				send(new_socket, "ERR\n", 4, 0);
-				printf("error sending\n");
-			}*/
+				cnt = 0;
+				char * temp = (char *)malloc(512);
+				while( fgets( buffer, BUF - 1, fp)){
+					if( strcmp( buffer, "New Email;\n") == 0){
+						cnt++;
+					}
+					if( strstr( buffer, "Subject:") != NULL){
+						sender = strtok( buffer, ":");
+						subject = strtok( NULL, ";");
+						strcat( temp, subject);
+						strcat( temp, ";");
+						
+					}
+				}
+				char *count;
+				snprintf( count, 10, "%d", cnt);
+				strcat( msg, count);
+				strcat( msg, ";");
+				strcat( msg, temp);
+				printf( "%s\n", msg); 
+				send(new_socket, count, BUF - 1, 0);
+			}
 
 		}else if( strcmp( buffer, "read") == 0){
 			printf("read...\n");

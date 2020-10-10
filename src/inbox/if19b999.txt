@@ -1,10 +1,8 @@
 New Email;
-if19b022;
-if19b999;
-Send is done;
-Send asht done, sbesoj qe ka gja ma me rregullu
-Send;
+Sender:if19b000;
+Subject:sub 1;
+Msg:halo ;
 New Email;
-if19b022;
-Subject 10;
-Subjecti ne fjale;
+Sender:if19b111;
+Subject:sub 2;
+Msg:haloa ;

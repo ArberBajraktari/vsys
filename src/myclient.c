@@ -159,17 +159,33 @@ int main(int argc, char **argv)
 			
 			// list ---------------------------------------------
 		}else if( strcmp( buffer, "list\n") == 0){
+			memset( reciever, 0, sizeof( reciever));
+			memset( buffer, 0, sizeof( buffer));
 			while(1){
-				if( fgets( buffer, BUF, stdin) != NULL){
-					if( strlen( buffer) != 9){
+				printf("Username: ");
+				if( fgets( reciever, BUF, stdin) != NULL){
+					if( strlen( reciever) != 9){
 						printf("Enter an username with 8 characters!\n");
 					}else{
+						reciever[8] = '\0';
+						send(create_socket, reciever, strlen(reciever), 0);
+						
+						size = recv(create_socket, buffer, BUF - 1, 0);
+						if (size > 0)
+						{
+							if( strcmp( buffer, "0") == 0){
+								printf("%s has %s Emails.\n", reciever, buffer);
+							}else{
+								printf("%s has %s Emails.\n", reciever, buffer);
+							}
+							
+						}else{
+							printf("ERR\n");
+						}
 						break;
 					}
 				}
 			}
-
-			
 		}else if( strcmp( buffer, "read\n") == 0){
 			if( fgets( buffer, BUF, stdin) != NULL){
 				if( strlen( buffer) != 9){
