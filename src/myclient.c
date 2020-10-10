@@ -91,7 +91,6 @@ int main(int argc, char **argv)
 		// SEND DATA
 		// https://man7.org/linux/man-pages/man2/send.2.html
 		send(create_socket, buffer, strlen(buffer), 0);
-		printf("%s", buffer);
 		if( strcmp( buffer, "send\n") == 0){
 			memset( sender, 0, sizeof( sender));
 			while(1){
@@ -103,7 +102,6 @@ int main(int argc, char **argv)
 						sender[8] = '\0';
 						strcat( to_send, sender);
 						strcat( to_send, ";");
-						
 						break;
 					}
 				}
@@ -118,7 +116,6 @@ int main(int argc, char **argv)
 						reciever[8] = '\0';
 						strcat( to_send, reciever);
 						strcat( to_send, ";");
-						
 						break;
 					}
 				}
@@ -133,7 +130,6 @@ int main(int argc, char **argv)
 						subject[strlen(subject) - 1] = '\0';
 						strcat( to_send, subject);
 						strcat( to_send, ";");
-				
 						break;
 					}
 				}
@@ -150,7 +146,6 @@ int main(int argc, char **argv)
 						break;
 					}
 				}
-				
 			}
 			
 			size = recv(create_socket, buffer, BUF - 1, 0);
