@@ -86,7 +86,6 @@ int main(int argc, char **argv)
       new_socket = accept(create_socket, 
                           (struct sockaddr *)&cliaddress, 
                           &addrlen);
-	printf("%s", inet_ntoa(cliaddress.sin_addr));
       if (new_socket > 0)
       {
          printf("Client connected from %s:%d...\n", 
@@ -117,120 +116,30 @@ int main(int argc, char **argv)
 			//tek sender shtohet stringu i recieverit...
 			memset(buffer, 0, sizeof(buffer));
 			size = recv(new_socket, buffer, BUF - 1, 0);
-			printf("%s", buffer);
+			printf("Recieved message from user!\n");
 			sender = strtok( buffer, ";");
-			printf("%s\n", sender);
 			reciever = strtok( NULL, ";");
-			printf("%s\n", reciever);
 			subject = strtok( NULL, ";");
-			printf("%s\n", subject);
 			msg = strtok( NULL, ".");
-			printf("%s\n", msg);
 			
 			snprintf(filename, sizeof(filename), "inbox/%s.txt", reciever);
 			fp = fopen(filename,"a");
 			if( fp == NULL){
-				send(new_socket, "ERR\n", strlen(buffer), 0);
-			}
-			fputs("New Email;", fp);
-			fputs(";\n", fp);
-			fputs( sender, fp);
-			fputs(";\n", fp);
-			fputs( reciever, fp);
-			fputs(";\n", fp);
-			fputs( subject, fp);
-			fputs(";\n", fp);
-			fputs( msg, fp);
-			fputs(";\n", fp);
-			fflush(fp);
-
-
-
-			//printf("%s", sen_uname);
-
-			/*if( sen_size > 0){
-				if(sen_uname[sen_size-1] == '\n') {
-					--sen_size;
-				}
-				sen_uname[sen_size] = '\0';			
-				printf("%s", sen_uname);
-				//senders username is read 					correctly			
-			}else{
 				send(new_socket, "ERR\n", 4, 0);
-				printf("error sending\n");
-			}
-
-
-			//read recievers username
-			rec_size = recv(new_socket, rec_uname, BUF - 1, 0);
-			if( rec_size > 0){
-				if(rec_uname[rec_size-1] == '\n') {
-				--rec_size;
-				}
-				rec_uname[rec_size] = '\0';
-				//ready to save to inbox
-
-				snprintf(filename, sizeof(filename), "inbox/%s.txt", 						rec_uname);
-				fp = fopen(filename,"a");
-				if( fp == NULL){
-					printf("s");
-				}
-				fputs( sen_uname, fp);
-				fputs("\n", fp);
-				fflush(fp);
-
-				printf("%s\n", rec_uname);		
 			}else{
-				send(new_socket, "ERR\n", 4, 0);
-				printf("error sending\n");
-			}
-
-			//read subject
-			sub_size = recv(new_socket, subject, BUF - 1, 0);
-			if( sub_size > 0){
-				if(subject[sub_size-1] == '\n') {
-				--sub_size;
-				}
-				subject[sub_size] = '\0';
-				//ready to save to inbox
-
-				fp=fopen(filename,"a");
-				if( fp == NULL){
-					printf("s");
-				}
+				fputs("New Email", fp);
+				fputs(";\n", fp);
+				fputs( sender, fp);
+				fputs(";\n", fp);
 				fputs( subject, fp);
-				fputs("\n", fp);
+				fputs(";\n", fp);
+				fputs( msg, fp);
+				fputs(";\n", fp);
 				fflush(fp);
-
-				printf("%s\n", subject);		
-			}else{
-				send(new_socket, "ERR\n", 4, 0);
-				printf("error sending\n");
+				fclose(fp);
+				send(new_socket, "OK\n", 3, 0);
 			}
-				
-			//read text
-			text_size = recv(new_socket, text, BUF - 1, 0);
-			if( text_size > 0){
-				if(text[text_size-1] == '\n') {
-				--text_size;
-				}
-				text[text_size] = '\0';
-				//ready to save to inbox
-
-				fp=fopen(filename,"a");
-				if( fp == NULL){
-					printf("s");
-				}
-				fputs( text, fp);
-				fputs( "\n.\n", fp);
-				fflush(fp);
-				printf("%s\n", subject);		
-			}else{
-				send(new_socket, "ERR\n", 4, 0);
-				printf("error sending\n");
-			}
-			send(new_socket, "OK\n", 3, 0);
-			fclose(fp);*/
+			
 		}else if( strcmp( buffer, "list") == 0){
 			
 			//read senders username

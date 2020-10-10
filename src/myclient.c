@@ -95,6 +95,7 @@ int main(int argc, char **argv)
 		if( strcmp( buffer, "send\n") == 0){
 			memset( sender, 0, sizeof( sender));
 			while(1){
+				printf("Sender: ");
 				if( fgets( sender, BUF, stdin) != NULL){
 					if( strlen( sender) != 9){
 						printf("Enter an username with 8 characters!\n");
@@ -109,6 +110,7 @@ int main(int argc, char **argv)
 			}
 			memset( reciever, 0, sizeof( reciever));
 			while(1){
+				printf("Reciever: ");
 				if( fgets( reciever, BUF, stdin) != NULL){
 					if( strlen( reciever) != 9){
 						printf("Enter an username with 8 characters!\n");
@@ -123,6 +125,7 @@ int main(int argc, char **argv)
 			}
 			memset( subject, 0, sizeof( subject));
 			while(1){
+				printf("Subject: ");
 				if( fgets( subject, BUF, stdin) != NULL){
 					if( strlen( subject) > 80){
 						printf("Enter an Subject with less than 80 characters!\n");
@@ -138,6 +141,7 @@ int main(int argc, char **argv)
 			memset( msg_temp, 0, sizeof( msg_temp));
 			memset( msg, 0, sizeof( msg));
 			while(1){
+				printf("Message: ");
 				if( fgets( msg_temp, BUF, stdin) != NULL){
 					strcat(msg, msg_temp);
 					if( strstr( msg_temp, ".") != 0){
@@ -147,6 +151,15 @@ int main(int argc, char **argv)
 					}
 				}
 				
+			}
+			
+			size = recv(create_socket, buffer, BUF - 1, 0);
+			if (size > 0)
+			{
+				buffer[size] = '\0';
+				printf("%s", buffer);
+			}else{
+				printf("ERR\n");
 			}
 			
 			// list ---------------------------------------------
