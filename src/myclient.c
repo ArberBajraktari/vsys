@@ -212,7 +212,7 @@ int main(int argc, char **argv)
 							fgets( email_nr, 4, stdin);
 							send(create_socket, email_nr, sizeof(email_nr), 0);
 							size = recv(create_socket, buffer, BUF - 1, 0);
-							printf("%s", buffer);
+							printf("%s\n", buffer);
 							break;
 							
 							

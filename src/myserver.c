@@ -206,16 +206,16 @@ int main(int argc, char **argv)
 					fseek( fp, 0, SEEK_SET);
 					while( fgets( buffer, BUF - 1, fp)){
 						if( strstr( buffer, "Msg:") != NULL){
-							if( in_email == e_nr || waiting){	
-								printf("%s", buffer);
+							if( in_email == e_nr){	
 								sender = strtok( buffer, ":");
+								//me lexu multiple lines
 								msg = strtok( NULL, ";");
-								printf("%s", msg);
+								break;
 							}
 							in_email++;
 						}
 					}
-					send(new_socket, "ok\n", BUF - 1, 0);
+					send(new_socket, msg, BUF - 1, 0);
 				}
 				
 				
