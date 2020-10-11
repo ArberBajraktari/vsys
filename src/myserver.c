@@ -172,7 +172,19 @@ int main(int argc, char **argv)
 			}
 
 		}else if( strcmp( buffer, "read") == 0){
-			printf("read...\n");
+			memset(buffer, 0, sizeof(buffer));
+			size = recv(new_socket, buffer, BUF - 1, 0);
+			printf("Recieved message from user!\n%s\n", buffer);
+			memset(filename, 0, sizeof(filename));
+			snprintf(filename, sizeof(filename), "inbox/%s.txt", buffer);
+			printf("Recieved message from user!\n");
+			fp = fopen(filename,"r");
+			if(fp == NULL){
+				send(new_socket, "0", 1, 0);
+			}else{
+				send(new_socket, "x", 1, 0);
+			}
+			
 		}else if( strcmp( buffer, "del") == 0){
 			printf("del...\n");
 		}
