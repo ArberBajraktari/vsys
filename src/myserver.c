@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -27,10 +28,13 @@ int main(int argc, char **argv)
 	char * sender;
 	char * reciever;
 	char * subject;
+	char * temp_str = (char *)malloc(512);
+	char * count;
 	int cnt = 0;
 	int e_nr = 0;
 	int in_email = 0;
 	FILE *fp;
+	FILE *fp_temp;
 	int waiting = 0;
 	
 
@@ -103,6 +107,8 @@ int main(int argc, char **argv)
 
       do
       {
+      	
+			fp_temp = fopen( "inbox/del.txt", "w");
          //////////////////////////////////////////////////////////////////////
          // RECEIVE
          size = recv(new_socket, buffer, BUF - 1, 0);
@@ -155,22 +161,22 @@ int main(int argc, char **argv)
 			}else{
 				cnt = 0;
 				memset(buffer, 0, sizeof(buffer));
-				char * temp = (char *)malloc(512);
-				memset(temp, 0, sizeof(temp));
+				memset(temp_str, 0, sizeof(temp_str));
+				
 				while( fgets( buffer, BUF - 1, fp)){
+					
 					if( strcmp( buffer, "New Email;\n") == 0){
 						cnt++;
 					}else if( strstr( buffer, "Subject:") != NULL){
 						sender = strtok( buffer, ":");
 						subject = strtok( NULL, ";");
-						strcat( temp, subject);
-						strcat( temp, "\n");
+						strcat( temp_str, subject);
+						strcat( temp_str, "\n");
 					}
 				}
-				char *count;
 				snprintf( count, 10, "%d", cnt);
 				send(new_socket, count, BUF - 1, 0);
-				send( new_socket, temp, BUF - 1, 0);
+				send( new_socket, temp_str, BUF - 1, 0);
 				printf("Emails are shown!\n");
 			}
 
@@ -223,7 +229,54 @@ int main(int argc, char **argv)
 			}
 			
 		}else if( strcmp( buffer, "del") == 0){
-			printf("del...\n");
+			memset(buffer, 0, sizeof(buffer));
+			size = recv(new_socket, buffer, BUF - 1, 0);
+			printf("Recieved message from user!\n%s\n", buffer);
+			memset(filename, 0, sizeof(filename));
+			snprintf(filename, sizeof(filename), "inbox/%s.txt", buffer);
+			printf("Recieved message from user!\n");
+			fp = fopen(filename,"r");
+			if( fp_temp == NULL){
+				printf("%s\n",strerror(errno));
+			}
+			if(fp == NULL){
+				send(new_socket, "ERR\n", 4, 0);
+			}else{
+				send(new_socket, "x", 1, 0);
+				memset(buffer, 0, sizeof(buffer));
+				size = recv(new_socket, buffer, BUF - 1, 0);
+				e_nr = atoi(buffer);
+				cnt = 0;
+				while( fgets( buffer, BUF - 1, fp)){
+					if( strcmp( buffer, "New Email;\n") == 0){
+						cnt++;
+					}
+				}
+				
+				if( e_nr > cnt){
+					send(new_socket, "ERR\n", 4, 0);
+				}else{
+					in_email = 0;
+					fseek( fp, 0, SEEK_SET);
+					while( fgets( buffer, BUF - 1, fp)){
+						if( strstr( buffer, "New Email;") != NULL){
+							in_email++;
+						}
+						if( in_email != e_nr){	
+							fputs( buffer, fp_temp);
+							printf("%s\n", buffer);
+						}
+					}
+					fflush(fp_temp);
+					fclose(fp_temp);
+					remove( filename);
+					rename( "inbox/del.txt", filename);
+					send(new_socket, "OK\n", BUF - 1, 0);
+				}
+				
+				
+				
+			}
 		}
 
          }

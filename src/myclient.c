@@ -222,11 +222,34 @@ int main(int argc, char **argv)
 				}
 			}
 		}else if( strcmp( buffer, "del\n") == 0){
-			if( fgets( buffer, BUF, stdin) != NULL){
-				if( strlen( buffer) != 9){
-					printf("Enter an username with 8 characters!\n");
-				}else{
-					printf("ok");
+			memset( reciever, 0, sizeof( reciever));
+			while(1){
+				printf("Username: ");
+				if( fgets( reciever, BUF, stdin) != NULL){
+					if( strlen( reciever) != 9){
+						printf("Enter an username with 8 characters!\n");
+					}else{
+						reciever[8] = '\0';
+						send(create_socket, reciever, strlen(reciever), 0);
+						memset( buffer, 0, sizeof( buffer));
+						size = recv(create_socket, buffer, BUF - 1, 0);
+						if( strcmp( buffer, "ERR\n") == 0 ){
+							printf( "%s", buffer);
+							break;
+						}else{
+							memset( buffer, 0, sizeof( buffer));
+							printf( "Write email number:");
+							char email_nr[4];
+							fgets( email_nr, 4, stdin);
+							send(create_socket, email_nr, sizeof(email_nr), 0);
+							size = recv(create_socket, buffer, BUF - 1, 0);
+							printf("%s\n", buffer);
+							break;
+							
+							
+						}
+						// print subjects
+					}
 				}
 			}
 		}
