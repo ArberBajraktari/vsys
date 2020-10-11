@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 {
 	int create_socket, new_socket;
 	int size;
-	char buffer[BUF], temp[BUF];
+	char buffer[BUF], temp[BUF], to_send[BUF];
 	socklen_t addrlen;
 	struct sockaddr_in address, cliaddress;
 
@@ -151,26 +151,24 @@ int main(int argc, char **argv)
 				send(new_socket, "0", 1, 0);
 			}else{
 				cnt = 0;
+				memset(buffer, 0, sizeof(buffer));
 				char * temp = (char *)malloc(512);
+				memset(temp, 0, sizeof(temp));
 				while( fgets( buffer, BUF - 1, fp)){
 					if( strcmp( buffer, "New Email;\n") == 0){
 						cnt++;
-					}
-					if( strstr( buffer, "Subject:") != NULL){
+					}else if( strstr( buffer, "Subject:") != NULL){
 						sender = strtok( buffer, ":");
 						subject = strtok( NULL, ";");
 						strcat( temp, subject);
-						strcat( temp, ";");
-						
+						strcat( temp, "\n");
 					}
 				}
 				char *count;
 				snprintf( count, 10, "%d", cnt);
-				strcat( msg, count);
-				strcat( msg, ";");
-				strcat( msg, temp);
-				printf( "%s\n", msg); 
 				send(new_socket, count, BUF - 1, 0);
+				send( new_socket, temp, BUF - 1, 0);
+				printf("Emails are shown!\n");
 			}
 
 		}else if( strcmp( buffer, "read") == 0){

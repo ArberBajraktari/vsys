@@ -177,6 +177,9 @@ int main(int argc, char **argv)
 								printf("%s has %s Emails.\n", reciever, buffer);
 							}else{
 								printf("%s has %s Emails.\n", reciever, buffer);
+								size = recv(create_socket, buffer, BUF - 1, 0);
+								// print subjects
+								printf( "%s", buffer);
 							}
 							
 						}else{
