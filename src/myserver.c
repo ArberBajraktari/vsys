@@ -28,7 +28,10 @@ int main(int argc, char **argv)
 	char * reciever;
 	char * subject;
 	int cnt = 0;
+	int e_nr = 0;
+	int in_email = 0;
 	FILE *fp;
+	int waiting = 0;
 	
 
    ////////////////////////////////////////////////////////////////////////////
@@ -182,17 +185,40 @@ int main(int argc, char **argv)
 			if(fp == NULL){
 				send(new_socket, "0", 1, 0);
 			}else{
-				//----------------
-				//
-				//	itu puno
-				//
-				//----------------
+				send(new_socket, "x", 1, 0);
+				memset(buffer, 0, sizeof(buffer));
+				size = recv(new_socket, buffer, BUF - 1, 0);
+				printf("%s", buffer);
+				e_nr = atoi(buffer);
+				printf("%d\n", e_nr);
+				cnt = 0;
 				while( fgets( buffer, BUF - 1, fp)){
 					if( strcmp( buffer, "New Email;\n") == 0){
 						cnt++;
 					}
 				}
-				send(new_socket, "x", 1, 0);
+				
+				if( e_nr > cnt){
+					send(new_socket, "ERR\n", 4, 0);
+				}else{
+					printf("%d\n", cnt);
+					in_email = 1;
+					fseek( fp, 0, SEEK_SET);
+					while( fgets( buffer, BUF - 1, fp)){
+						if( strstr( buffer, "Msg:") != NULL){
+							if( in_email == e_nr || waiting){	
+								printf("%s", buffer);
+								sender = strtok( buffer, ":");
+								msg = strtok( NULL, ";");
+								printf("%s", msg);
+							}
+							in_email++;
+						}
+					}
+					send(new_socket, "ok\n", BUF - 1, 0);
+				}
+				
+				
 				
 			}
 			

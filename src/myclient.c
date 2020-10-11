@@ -206,11 +206,18 @@ int main(int argc, char **argv)
 							printf( "User has %s Emails.\n", buffer);
 							break;
 						}else{
-							printf( "User has %s Emails.\n", buffer);
+							memset( buffer, 0, sizeof( buffer));
+							printf( "Write email number:");
+							char email_nr[4];
+							fgets( email_nr, 4, stdin);
+							send(create_socket, email_nr, sizeof(email_nr), 0);
+							size = recv(create_socket, buffer, BUF - 1, 0);
+							printf("%s", buffer);
+							break;
+							
+							
 						}
 						// print subjects
-						
-						break;
 					}
 				}
 			}
