@@ -182,7 +182,18 @@ int main(int argc, char **argv)
 			if(fp == NULL){
 				send(new_socket, "0", 1, 0);
 			}else{
+				//----------------
+				//
+				//	itu puno
+				//
+				//----------------
+				while( fgets( buffer, BUF - 1, fp)){
+					if( strcmp( buffer, "New Email;\n") == 0){
+						cnt++;
+					}
+				}
 				send(new_socket, "x", 1, 0);
+				
 			}
 			
 		}else if( strcmp( buffer, "del") == 0){

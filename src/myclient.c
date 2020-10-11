@@ -21,6 +21,7 @@ int main(int argc, char **argv)
 	char sender[8], reciever[8], subject[80], msg[BUF], msg_temp[BUF];
 	struct sockaddr_in address;
 	int size;
+	int email_nr;
 
 
    ////////////////////////////////////////////////////////////////////////////
@@ -201,8 +202,14 @@ int main(int argc, char **argv)
 						send(create_socket, reciever, strlen(reciever), 0);
 						memset( buffer, 0, sizeof( buffer));
 						size = recv(create_socket, buffer, BUF - 1, 0);
+						if( strcmp( buffer, "0") == 0 ){
+							printf( "User has %s Emails.\n", buffer);
+							break;
+						}else{
+							printf( "User has %s Emails.\n", buffer);
+						}
 						// print subjects
-						printf( "%s", buffer);
+						
 						break;
 					}
 				}
