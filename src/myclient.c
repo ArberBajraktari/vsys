@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "functions.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -17,11 +18,10 @@
 int main(int argc, char **argv)
 {
 	int create_socket;
-	char buffer[BUF], to_send[BUF];
-	char sender[8], reciever[8], subject[80], msg[BUF], msg_temp[BUF];
+	char buffer[BUF] = "", to_send[BUF] = "";
+	char sender[9], reciever[9], subject[81], msg[BUF]="";
 	struct sockaddr_in address;
 	int size;
-	int email_nr;
 
 
    ////////////////////////////////////////////////////////////////////////////
@@ -84,222 +84,37 @@ int main(int argc, char **argv)
    do
    {
       printf("Send message: ");
-      memset( buffer, 0, sizeof( buffer));
-      memset( to_send, 0, sizeof( to_send));
-      if (fgets(buffer, BUF, stdin) != NULL)
+      if ( fgets( buffer, BUF, stdin) != NULL)
       {
-		//////////////////////////////////////////////////////////////////////
-		// SEND DATA
-		// https://man7.org/linux/man-pages/man2/send.2.html
 		send(create_socket, buffer, strlen(buffer), 0);
 		if( strcmp( buffer, "send\n") == 0){
-			memset( sender, 0, sizeof( sender));
-			while(1){
-				printf("Sender: ");
-				if( fgets( sender, BUF, stdin) != NULL){
-					if( strlen( sender) != 9){
-						printf("Enter an username with 8 characters!\n");
-					}else{
-						sender[8] = '\0';
-						strcat( to_send, sender);
-						strcat( to_send, ";");
-						break;
-					}
-				}
-			}
-			memset( reciever, 0, sizeof( reciever));
-			while(1){
-				printf("Reciever: ");
-				if( fgets( reciever, BUF, stdin) != NULL){
-					if( strlen( reciever) != 9){
-						printf("Enter an username with 8 characters!\n");
-					}else{
-						reciever[8] = '\0';
-						strcat( to_send, reciever);
-						strcat( to_send, ";");
-						break;
-					}
-				}
-			}
-			memset( subject, 0, sizeof( subject));
-			while(1){
-				printf("Subject: ");
-				if( fgets( subject, BUF, stdin) != NULL){
-					if( strlen( subject) > 80){
-						printf("Enter an Subject with less than 80 characters!\n");
-					}else{
-						subject[strlen(subject) - 1] = '\0';
-						strcat( to_send, subject);
-						strcat( to_send, ";");
-						break;
-					}
-				}
-			}
-			memset( msg_temp, 0, sizeof( msg_temp));
-			memset( msg, 0, sizeof( msg));
-			while(1){
-				printf("Message: ");
-				if( fgets( msg_temp, BUF, stdin) != NULL){
-					strcat(msg, msg_temp);
-					if( strstr( msg_temp, ".") != 0){
-						strcat( to_send, msg);
-						send(create_socket, to_send, strlen(to_send), 0);
-						break;
-					}
-				}
-			}
+			check_username("Sender", sender);
+			clean_stdin();
+			check_username("Reciever", reciever);
+			clean_stdin();
+			check_subject( subject);
+			strtok( subject, "\n");
+			check_msg( msg);
 			
+			strcat( to_send, sender);
+			strcat( to_send, ";");
+			strcat( to_send, reciever);
+			strcat( to_send, ";");
+			strcat( to_send, subject);
+			strcat( to_send, ";");
+			strcat( to_send, msg);
+			send(create_socket, to_send, strlen(to_send), 0);
+			memset(buffer, 0, sizeof(buffer));
 			size = recv(create_socket, buffer, BUF - 1, 0);
 			if (size > 0)
 			{
-				buffer[size] = '\0';
 				printf("%s", buffer);
 			}else{
 				printf("ERR\n");
 			}
 			
 			// list ---------------------------------------------
-		}else if( strcmp( buffer, "list\n") == 0){
-			memset( reciever, 0, sizeof( reciever));
-			memset( buffer, 0, sizeof( buffer));
-			while(1){
-				printf("Username: ");
-				if( fgets( reciever, BUF, stdin) != NULL){
-					if( strlen( reciever) != 9){
-						printf("Enter an username with 8 characters!\n");
-					}else{
-						reciever[8] = '\0';
-						send(create_socket, reciever, strlen(reciever), 0);
-						
-						size = recv(create_socket, buffer, BUF - 1, 0);
-						if (size > 0)
-						{
-							if( strcmp( buffer, "0") == 0){
-								printf("%s has %s Emails.\n", reciever, buffer);
-							}else{
-								printf("%s has %s Emails.\n", reciever, buffer);
-								size = recv(create_socket, buffer, BUF - 1, 0);
-								// print subjects
-								printf( "%s", buffer);
-							}
-							
-						}else{
-							printf("ERR\n");
-						}
-						break;
-					}
-				}
-			}
-		}else if( strcmp( buffer, "read\n") == 0){
-			memset( reciever, 0, sizeof( reciever));
-			while(1){
-				printf("Username: ");
-				if( fgets( reciever, BUF, stdin) != NULL){
-					if( strlen( reciever) != 9){
-						printf("Enter an username with 8 characters!\n");
-					}else{
-						reciever[8] = '\0';
-						send(create_socket, reciever, strlen(reciever), 0);
-						memset( buffer, 0, sizeof( buffer));
-						size = recv(create_socket, buffer, BUF - 1, 0);
-						if( strcmp( buffer, "0") == 0 ){
-							printf( "User has %s Emails.\n", buffer);
-							break;
-						}else{
-							memset( buffer, 0, sizeof( buffer));
-							printf( "Write email number:");
-							char email_nr[4];
-							fgets( email_nr, 4, stdin);
-							send(create_socket, email_nr, sizeof(email_nr), 0);
-							size = recv(create_socket, buffer, BUF - 1, 0);
-							printf("%s\n", buffer);
-							break;
-							
-							
-						}
-						// print subjects
-					}
-				}
-			}
-		}else if( strcmp( buffer, "del\n") == 0){
-			memset( reciever, 0, sizeof( reciever));
-			while(1){
-				printf("Username: ");
-				if( fgets( reciever, BUF, stdin) != NULL){
-					if( strlen( reciever) != 9){
-						printf("Enter an username with 8 characters!\n");
-					}else{
-						reciever[8] = '\0';
-						send(create_socket, reciever, strlen(reciever), 0);
-						memset( buffer, 0, sizeof( buffer));
-						size = recv(create_socket, buffer, BUF - 1, 0);
-						if( strcmp( buffer, "ERR\n") == 0 ){
-							printf( "%s", buffer);
-							break;
-						}else{
-							memset( buffer, 0, sizeof( buffer));
-							printf( "Write email number:");
-							char email_nr[4];
-							fgets( email_nr, 4, stdin);
-							send(create_socket, email_nr, sizeof(email_nr), 0);
-							size = recv(create_socket, buffer, BUF - 1, 0);
-							printf("%s\n", buffer);
-							break;
-							
-							
-						}
-						// print subjects
-					}
-				}
-			}
 		}
-		/*
-		//////////////////
-		// send
-		//////////////////
-		
-			fgets(buffer, BUF, stdin);
-			send(create_socket, buffer, strlen(buffer), 0);
-			printf("Reciever username: ");
-			fgets(buffer, BUF, stdin);
-			send(create_socket, buffer, strlen(buffer), 0);
-			printf("Subject: ");
-			fgets(buffer, BUF, stdin);
-			send(create_socket, buffer, strlen(buffer), 0);
-			printf("Message: ");
-			fgets(buffer, BUF, stdin);
-			send(create_socket, buffer, strlen(buffer), 0);
-			size = recv(create_socket, buffer, BUF - 1, 0);
-			if (size > 0)
-			{
-				buffer[size] = '\0';
-				printf("%s", buffer);
-			}else{
-				printf("cant read");
-			}
-
-		}
-		//////////////////
-		// list
-		//////////////////		
-		else if( strcmp( buffer, "list\n") == 0){
-			printf("Username: ");
-			scanf(" %s", buffer);
-			send(create_socket, buffer, strlen(buffer), 0);
-		}
-		//////////////////
-		// read
-		//////////////////
-		else if( strcmp( buffer, "read\n") == 0){
-			printf("read...\n");
-		}
-		//////////////////
-		// del
-		//////////////////
-		else if( strcmp( buffer, "del\n") == 0){
-			printf("del...\n");
-		}
-*/
       }
 	
    } while (strcmp(buffer, "quit\n") != 0);
