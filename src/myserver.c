@@ -108,7 +108,7 @@ int main(int argc, char **argv)
       do
       {
       	
-			fp_temp = fopen( "inbox/del.txt", "w");
+	 	fp_temp = fopen( "inbox/del.txt", "w");
          //////////////////////////////////////////////////////////////////////
          // RECEIVE
          size = recv(new_socket, buffer, BUF - 1, 0);
@@ -123,8 +123,6 @@ int main(int argc, char **argv)
 		printf("User selected %s option.\n", buffer);
 		//if send option is selected
 		if( strcmp( buffer, "send") == 0){
-			
-			memset(buffer, 0, sizeof(buffer));
 			size = recv(new_socket, buffer, BUF - 1, 0);
 			printf("Recieved message from user!\n");
 			sender = strtok( buffer, ";");
@@ -150,7 +148,7 @@ int main(int argc, char **argv)
 				send(new_socket, "OK\n", 3, 0);
 			}
 			
-		}else if( strcmp( buffer, "list") == 0){
+		}/*else if( strcmp( buffer, "list") == 0){
 			memset(buffer, 0, sizeof(buffer));
 			size = recv(new_socket, buffer, BUF - 1, 0);
 			snprintf(filename, sizeof(filename), "inbox/%s.txt", buffer);
@@ -277,7 +275,7 @@ int main(int argc, char **argv)
 				
 				
 			}
-		}
+		}*/
 
          }
          else if (size == 0)
