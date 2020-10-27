@@ -175,7 +175,6 @@ int main(int argc, char **argv)
 				send( new_socket, to_send, BUF - 1, 0);
 				printf("Emails are shown!\n");
 			}
-			
 
 		}else if( strcmp( buffer, "read") == 0){
 			memset(buffer, 0, sizeof(buffer));
@@ -203,7 +202,6 @@ int main(int argc, char **argv)
 						cnt++;
 					}
 				}
-				
 				if( e_nr > cnt){
 					send(new_socket, "ERR\n", 4, 0);
 				}else{
@@ -231,8 +229,6 @@ int main(int argc, char **argv)
 								}
 
 								in_email--;
-								
-								//strncat( msg, buffer, sizeof(buffer));
 							}
 							in_email++;
 						}
@@ -292,9 +288,6 @@ int main(int argc, char **argv)
 					rename( "inbox/del.txt", filename);
 					send(new_socket, "OK\n", BUF - 1, 0);
 				}
-				
-				
-				
 			}
 		}
 

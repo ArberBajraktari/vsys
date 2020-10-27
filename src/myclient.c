@@ -194,53 +194,6 @@ int main(int argc, char **argv)
 				printf("ERR\n");
 			}
 		}
-		/*
-		//////////////////
-		// send
-		//////////////////
-		
-			fgets(buffer, BUF, stdin);
-			send(create_socket, buffer, strlen(buffer), 0);
-			printf("Reciever username: ");
-			fgets(buffer, BUF, stdin);
-			send(create_socket, buffer, strlen(buffer), 0);
-			printf("Subject: ");
-			fgets(buffer, BUF, stdin);
-			send(create_socket, buffer, strlen(buffer), 0);
-			printf("Message: ");
-			fgets(buffer, BUF, stdin);
-			send(create_socket, buffer, strlen(buffer), 0);
-			size = recv(create_socket, buffer, BUF - 1, 0);
-			if (size > 0)
-			{
-				buffer[size] = '\0';
-				printf("%s", buffer);
-			}else{
-				printf("cant read");
-			}
-
-		}
-		//////////////////
-		// list
-		//////////////////		
-		else if( strcmp( buffer, "list\n") == 0){
-			printf("Username: ");
-			scanf(" %s", buffer);
-			send(create_socket, buffer, strlen(buffer), 0);
-		}
-		//////////////////
-		// read
-		//////////////////
-		else if( strcmp( buffer, "read\n") == 0){
-			printf("read...\n");
-		}
-		//////////////////
-		// del
-		//////////////////
-		else if( strcmp( buffer, "del\n") == 0){
-			printf("del...\n");
-		}
-*/
       }
 	
    } while (strcmp(buffer, "quit\n") != 0);
