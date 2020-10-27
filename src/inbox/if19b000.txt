@@ -1,0 +1,10 @@
+New Email;
+Sender:if19b022;
+Subject:hey;
+Msg:hey
+;
+New Email;
+Sender:if19b111;
+Subject:subject 1;
+Msg:heyo
+;

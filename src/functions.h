@@ -5,7 +5,7 @@ void clean_stdin(void){
 	}while(c != '\n' && c != EOF);
 }
 
-void check_username(char* reference, char* uname){
+void check_username(const char* reference, char* uname){
 	while(1){
 		printf("%s: ", reference);
 		if( fgets( uname, 9, stdin) != NULL){

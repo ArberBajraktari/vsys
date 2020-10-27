@@ -19,23 +19,22 @@ int main(int argc, char **argv)
 {
 	int create_socket, new_socket;
 	int size;
-	char buffer[BUF], temp[BUF], to_send[BUF];
+	char buffer[BUF];
 	socklen_t addrlen;
 	struct sockaddr_in address, cliaddress;
+	char to_send[BUF];
 
 	char filename[0x100];
 	char * msg;
 	char * sender;
 	char * reciever;
 	char * subject;
-	char * temp_str = (char *)malloc(512);
-	char * count;
+	char count[5];
 	int cnt = 0;
 	int e_nr = 0;
 	int in_email = 0;
 	FILE *fp;
 	FILE *fp_temp;
-	int waiting = 0;
 	
 
    ////////////////////////////////////////////////////////////////////////////
@@ -148,8 +147,9 @@ int main(int argc, char **argv)
 				send(new_socket, "OK\n", 3, 0);
 			}
 			
-		}/*else if( strcmp( buffer, "list") == 0){
+		}else if( strcmp( buffer, "list") == 0){
 			memset(buffer, 0, sizeof(buffer));
+			memset(to_send, 0, sizeof(to_send));
 			size = recv(new_socket, buffer, BUF - 1, 0);
 			snprintf(filename, sizeof(filename), "inbox/%s.txt", buffer);
 			printf("Recieved message from user!\n");
@@ -158,25 +158,22 @@ int main(int argc, char **argv)
 				send(new_socket, "0", 1, 0);
 			}else{
 				cnt = 0;
-				memset(buffer, 0, sizeof(buffer));
-				memset(temp_str, 0, sizeof(temp_str));
-				
 				while( fgets( buffer, BUF - 1, fp)){
-					
 					if( strcmp( buffer, "New Email;\n") == 0){
 						cnt++;
 					}else if( strstr( buffer, "Subject:") != NULL){
 						sender = strtok( buffer, ":");
 						subject = strtok( NULL, ";");
-						strcat( temp_str, subject);
-						strcat( temp_str, "\n");
+						strcat( to_send, subject);
+						strcat( to_send, "\n");
 					}
 				}
-				snprintf( count, 10, "%d", cnt);
+				snprintf( count, 5, "%d", cnt);
 				send(new_socket, count, BUF - 1, 0);
-				send( new_socket, temp_str, BUF - 1, 0);
+				send( new_socket, to_send, BUF - 1, 0);
 				printf("Emails are shown!\n");
 			}
+			
 
 		}else if( strcmp( buffer, "read") == 0){
 			memset(buffer, 0, sizeof(buffer));
@@ -219,7 +216,12 @@ int main(int argc, char **argv)
 							in_email++;
 						}
 					}
-					send(new_socket, msg, BUF - 1, 0);
+					if( msg != NULL){
+						send(new_socket, msg, BUF - 1, 0);
+					}else{
+						send(new_socket, "ERR\n", 4, 0);
+					}
+					
 				}
 				
 				
@@ -275,7 +277,7 @@ int main(int argc, char **argv)
 				
 				
 			}
-		}*/
+		}
 
          }
          else if (size == 0)
