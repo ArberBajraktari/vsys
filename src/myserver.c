@@ -23,6 +23,7 @@ int main(int argc, char **argv)
 	socklen_t addrlen;
 	struct sockaddr_in address, cliaddress;
 	char to_send[BUF];
+	char empty = ' ';
 
 	char filename[0x100];
 	char * msg;
@@ -33,6 +34,7 @@ int main(int argc, char **argv)
 	int cnt = 0;
 	int e_nr = 0;
 	int in_email = 0;
+	bool msg_cnt = false;
 	FILE *fp;
 	FILE *fp_temp;
 	
@@ -177,22 +179,25 @@ int main(int argc, char **argv)
 
 		}else if( strcmp( buffer, "read") == 0){
 			memset(buffer, 0, sizeof(buffer));
+			memset(to_send, 0, sizeof(to_send));
 			size = recv(new_socket, buffer, BUF - 1, 0);
-			printf("Recieved message from user!\n%s\n", buffer);
+			printf("user is %s\n", buffer);
 			memset(filename, 0, sizeof(filename));
 			snprintf(filename, sizeof(filename), "inbox/%s.txt", buffer);
-			printf("Recieved message from user!\n");
+			printf("Recieved message from %s!\n", filename);
 			fp = fopen(filename,"r");
 			if(fp == NULL){
 				send(new_socket, "0", 1, 0);
 			}else{
 				send(new_socket, "x", 1, 0);
+				msg = &empty;
 				memset(buffer, 0, sizeof(buffer));
 				size = recv(new_socket, buffer, BUF - 1, 0);
 				printf("%s", buffer);
 				e_nr = atoi(buffer);
 				printf("%d\n", e_nr);
 				cnt = 0;
+				memset(buffer, 0, sizeof(buffer));
 				while( fgets( buffer, BUF - 1, fp)){
 					if( strcmp( buffer, "New Email;\n") == 0){
 						cnt++;
@@ -205,29 +210,43 @@ int main(int argc, char **argv)
 					printf("%d\n", cnt);
 					in_email = 1;
 					fseek( fp, 0, SEEK_SET);
+					memset(buffer, 0, sizeof(buffer));
 					while( fgets( buffer, BUF - 1, fp)){
-						if( strstr( buffer, "Msg:") != NULL){
-							if( in_email == e_nr){	
-								sender = strtok( buffer, ":");
-								//me lexu multiple lines
-								msg = strtok( NULL, ";");
-								break;
+						if( strstr( buffer, "Msg:") != NULL || msg_cnt){
+							if( in_email == e_nr){
+								//clear what is not needed
+								if( strstr( buffer, ":") != NULL){
+									sender = strtok( buffer, ":");
+									strncat( to_send, strtok( NULL, ";"), sizeof(strtok( NULL, ";")));
+									msg_cnt = true;
+								}else{
+									if( strstr( buffer, ";") != NULL){
+										strncat( to_send, strtok( buffer, ";"), sizeof(strtok( buffer, ";")));
+										msg_cnt = false;
+										break;
+									}else{
+										strncat( to_send, buffer, sizeof(buffer));
+										msg_cnt = true;
+									}
+								}
+
+								in_email--;
+								
+								//strncat( msg, buffer, sizeof(buffer));
 							}
 							in_email++;
 						}
 					}
 					if( msg != NULL){
-						send(new_socket, msg, BUF - 1, 0);
+						printf("%s\n", to_send);
+						send(new_socket, to_send, BUF - 1, 0);
 					}else{
 						send(new_socket, "ERR\n", 4, 0);
 					}
 					
 				}
 				
-				
-				
 			}
-			
 		}else if( strcmp( buffer, "del") == 0){
 			memset(buffer, 0, sizeof(buffer));
 			size = recv(new_socket, buffer, BUF - 1, 0);
