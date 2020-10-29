@@ -170,10 +170,15 @@ int main(int argc, char **argv)
 						strcat( to_send, "\n");
 					}
 				}
-				snprintf( count, 5, "%d", cnt);
-				send(new_socket, count, BUF - 1, 0);
-				send( new_socket, to_send, BUF - 1, 0);
-				printf("Emails are shown!\n");
+				if( cnt == 0){
+					send(new_socket, "0", 1, 0);
+				}else{
+					snprintf( count, 5, "%d", cnt);
+					send( new_socket, count, BUF - 1, 0);
+					send( new_socket, to_send, BUF - 1, 0);
+					printf("Emails are shown!\n");
+				}
+				
 			}
 
 		}else if( strcmp( buffer, "read") == 0){
