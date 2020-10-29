@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <pthread.h>
+
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -15,29 +17,14 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
+void* handle_client(void* sck);
+
 int main(int argc, char **argv)
 {
 	int create_socket, new_socket;
-	int size;
 	char buffer[BUF];
 	socklen_t addrlen;
 	struct sockaddr_in address, cliaddress;
-	char to_send[BUF];
-	char empty = ' ';
-
-	char filename[0x100];
-	char * msg;
-	char * sender;
-	char * reciever;
-	char * subject;
-	char count[5];
-	int cnt = 0;
-	int e_nr = 0;
-	int in_email = 0;
-	bool msg_cnt = false;
-	FILE *fp;
-	FILE *fp_temp;
-	
 
    ////////////////////////////////////////////////////////////////////////////
    // CREATE A SOCKET
@@ -103,13 +90,42 @@ int main(int argc, char **argv)
          strcpy(buffer, "Welcome to myserver!\r\nPlease enter your commands...\r\n");
          send(new_socket, buffer, strlen(buffer), 0);
       }
+      
+      pthread_t t1;
+      pthread_create(&t1, NULL, handle_client, (void*) &new_socket);
+      pthread_detach( t1);
+      	
+   }
 
-      // think here about thread-handling or forking ...
+   // frees the descriptor
+   close(create_socket);
+   return EXIT_SUCCESS;
+}
 
-      do
+void* handle_client(void* sck){
+	int new_socket = *(int *) sck;
+	//int new_socket = *((int*) (&vargp));
+	char to_send[BUF];
+	char empty = ' ';
+	int size;
+	char buffer[BUF];
+
+	char filename[0x100];
+	char * msg;
+	char * sender;
+	char * reciever;
+	char * subject;
+	char count[5];
+	int cnt = 0;
+	int e_nr = 0;
+	int in_email = 0;
+	bool msg_cnt = false;
+	FILE *fp;
+	FILE *fp_temp;
+	do
       {
       	
-	 	fp_temp = fopen( "inbox/del.txt", "w");
+	 	
          //////////////////////////////////////////////////////////////////////
          // RECEIVE
          size = recv(new_socket, buffer, BUF - 1, 0);
@@ -249,6 +265,7 @@ int main(int argc, char **argv)
 				
 			}
 		}else if( strcmp( buffer, "del") == 0){
+			fp_temp = fopen( "inbox/del.txt", "w");
 			memset(buffer, 0, sizeof(buffer));
 			size = recv(new_socket, buffer, BUF - 1, 0);
 			printf("Recieved message from user!\n%s\n", buffer);
@@ -305,16 +322,10 @@ int main(int argc, char **argv)
          else
          {
             perror("recv error");
-            return EXIT_FAILURE;
          }
 
       } while (strcmp(buffer, "quit") != 0);
-
-      // frees the descriptor
+      
       close(new_socket);
-   }
-
-   // frees the descriptor
-   close(create_socket);
-   return EXIT_SUCCESS;
+      pthread_exit(0);
 }

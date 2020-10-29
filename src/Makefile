@@ -32,10 +32,10 @@ clean:
 	${CC} ${CFLAGS} -o obj/myclient.o myclient.c -c
 
 ./obj/myserver.o: myserver.c
-	${CC} ${CFLAGS} -o obj/myserver.o myserver.c -c 
+	${CC} ${CFLAGS} -o obj/myserver.o myserver.c -c -lpthread
 
 ./bin/server: ./obj/myserver.o
-	${CC} ${CFLAGS} -o bin/server obj/myserver.o
+	${CC} ${CFLAGS} -o bin/server obj/myserver.o -lpthread
 
 ./bin/client: ./obj/myclient.o
 	${CC} ${CFLAGS} -o bin/client obj/myclient.o
