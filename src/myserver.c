@@ -104,6 +104,7 @@ int main(int argc, char **argv)
 
 void* handle_client(void* sck){
 	int new_socket = *(int *) sck;
+	pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 	//int new_socket = *((int*) (&vargp));
 	char to_send[BUF];
 	char empty = ' ';
@@ -148,8 +149,11 @@ void* handle_client(void* sck){
 			subject = strtok( NULL, ";");
 			msg = strtok( NULL, ".");
 			
+			//lock the file, other threads are not allowed to open it
+			pthread_mutex_lock( &lock);
 			snprintf(filename, sizeof(filename), "inbox/%s.txt", reciever);
 			fp = fopen(filename,"a");
+			pthread_mutex_unlock(&lock);
 			if( fp == NULL){
 				send(new_socket, "ERR\n", 4, 0);
 			}else{
@@ -171,13 +175,18 @@ void* handle_client(void* sck){
 			memset(to_send, 0, sizeof(to_send));
 			memset(fname, 0, sizeof(fname));
 			size = recv(new_socket, fname, 25, 0);
+			//lock the file
+			pthread_mutex_lock( &lock);
 			snprintf(filename, sizeof(filename), "inbox/%s.txt", fname);
+			pthread_mutex_unlock( &lock);
 			printf("Recieved message from user!\n");
 			fp = fopen(filename,"r");
 			if(fp == NULL){
 				send(new_socket, "0", 1, 0);
 			}else{
 				cnt = 0;
+				//file is being read, other threads should not change it
+				pthread_mutex_lock( &lock);
 				while( fgets( buffer, BUF - 1, fp)){
 					if( strcmp( buffer, "New Email;\n") == 0){
 						cnt++;
@@ -188,6 +197,7 @@ void* handle_client(void* sck){
 						strcat( to_send, "\n");
 					}
 				}
+				pthread_mutex_unlock( &lock);
 				if( cnt == 0){
 					send(new_socket, "0", 1, 0);
 				}else{
@@ -206,9 +216,12 @@ void* handle_client(void* sck){
 			size = recv(new_socket, fname, 25, 0);
 			printf("user is %s\n", buffer);
 			memset(filename, 0, sizeof(filename));
+			//lock the file
+			pthread_mutex_lock( &lock);
 			snprintf(filename, sizeof(filename), "inbox/%s.txt", fname);
 			printf("Recieved message from %s!\n", filename);
 			fp = fopen(filename,"r");
+			pthread_mutex_unlock( &lock);
 			if(fp == NULL){
 				send(new_socket, "0", 1, 0);
 			}else{
@@ -221,11 +234,15 @@ void* handle_client(void* sck){
 				printf("%d\n", e_nr);
 				cnt = 0;
 				memset(buffer, 0, sizeof(buffer));
+				//fille is being read
+				pthread_mutex_lock( &lock);
 				while( fgets( buffer, BUF - 1, fp)){
 					if( strcmp( buffer, "New Email;\n") == 0){
 						cnt++;
 					}
 				}
+				pthread_mutex_unlock( &lock);
+				
 				if( e_nr > cnt){
 					send(new_socket, "ERR\n", 4, 0);
 				}else{
@@ -233,6 +250,8 @@ void* handle_client(void* sck){
 					in_email = 1;
 					fseek( fp, 0, SEEK_SET);
 					memset(buffer, 0, sizeof(buffer));
+					//file is being read
+					pthread_mutex_lock( &lock);
 					while( fgets( buffer, BUF - 1, fp)){
 						if( strstr( buffer, "Msg:") != NULL || msg_cnt){
 							if( in_email == e_nr){
@@ -257,6 +276,8 @@ void* handle_client(void* sck){
 							in_email++;
 						}
 					}
+					pthread_mutex_unlock( &lock);
+					
 					if( msg != NULL){
 						printf("%s\n", to_send);
 						send(new_socket, to_send, BUF - 1, 0);
@@ -274,11 +295,14 @@ void* handle_client(void* sck){
 			size = recv(new_socket, fname, 25, 0);
 			printf("Recieved message from user!\n%s\n", buffer);
 			memset(filename, 0, sizeof(filename));
+			//lock file
+			pthread_mutex_lock( &lock);
 			snprintf(filename, sizeof(filename), "inbox/%s.txt", fname);
 			printf("Recieved message from user!\n");
 			fp = fopen(filename,"r");
+			pthread_mutex_unlock( &lock);
 			if( fp_temp == NULL){
-				printf("%s\n",strerror(errno));
+				printf("%s\n", strerror(errno));
 			}
 			if(fp == NULL){
 				send(new_socket, "ERR\n", 4, 0);
@@ -288,17 +312,22 @@ void* handle_client(void* sck){
 				size = recv(new_socket, buffer, 25, 0);
 				e_nr = atoi(buffer);
 				cnt = 0;
+				//file being read
+				pthread_mutex_lock( &lock);
 				while( fgets( buffer, BUF - 1, fp)){
 					if( strcmp( buffer, "New Email;\n") == 0){
 						cnt++;
 					}
 				}
+				pthread_mutex_unlock( &lock);
 				
 				if( e_nr > cnt){
 					send(new_socket, "ERR\n", 4, 0);
 				}else{
 					in_email = 0;
 					fseek( fp, 0, SEEK_SET);
+					//file being read
+					pthread_mutex_lock( &lock);
 					while( fgets( buffer, BUF - 1, fp)){
 						if( strstr( buffer, "New Email;") != NULL){
 							in_email++;
@@ -311,7 +340,9 @@ void* handle_client(void* sck){
 					fflush(fp_temp);
 					fclose(fp_temp);
 					remove( filename);
+					//deleting an message from a user
 					rename( "inbox/del.txt", filename);
+					pthread_mutex_unlock( &lock);
 					send(new_socket, "OK\n", BUF - 1, 0);
 				}
 			}
