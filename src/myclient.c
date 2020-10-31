@@ -193,6 +193,8 @@ int main(int argc, char **argv)
 			}else{
 				printf("ERR\n");
 			}
+		}else if( strcmp( buffer, "quit\n") != 0){
+			printf("Please select between:\nsend, list, read, del or quit\n");
 		}
       }
 	

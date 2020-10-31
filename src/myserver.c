@@ -109,6 +109,7 @@ void* handle_client(void* sck){
 	char empty = ' ';
 	int size;
 	char buffer[BUF];
+	char fname[25];
 
 	char filename[0x100];
 	char * msg;
@@ -168,8 +169,9 @@ void* handle_client(void* sck){
 		}else if( strcmp( buffer, "list") == 0){
 			memset(buffer, 0, sizeof(buffer));
 			memset(to_send, 0, sizeof(to_send));
-			size = recv(new_socket, buffer, BUF - 1, 0);
-			snprintf(filename, sizeof(filename), "inbox/%s.txt", buffer);
+			memset(fname, 0, sizeof(fname));
+			size = recv(new_socket, fname, 25, 0);
+			snprintf(filename, sizeof(filename), "inbox/%s.txt", fname);
 			printf("Recieved message from user!\n");
 			fp = fopen(filename,"r");
 			if(fp == NULL){
@@ -200,10 +202,11 @@ void* handle_client(void* sck){
 		}else if( strcmp( buffer, "read") == 0){
 			memset(buffer, 0, sizeof(buffer));
 			memset(to_send, 0, sizeof(to_send));
-			size = recv(new_socket, buffer, BUF - 1, 0);
+			memset(fname, 0, sizeof(fname));
+			size = recv(new_socket, fname, 25, 0);
 			printf("user is %s\n", buffer);
 			memset(filename, 0, sizeof(filename));
-			snprintf(filename, sizeof(filename), "inbox/%s.txt", buffer);
+			snprintf(filename, sizeof(filename), "inbox/%s.txt", fname);
 			printf("Recieved message from %s!\n", filename);
 			fp = fopen(filename,"r");
 			if(fp == NULL){
@@ -244,7 +247,7 @@ void* handle_client(void* sck){
 										msg_cnt = false;
 										break;
 									}else{
-										strncat( to_send, buffer, sizeof(buffer));
+										strncat( to_send, buffer, strlen(buffer));
 										msg_cnt = true;
 									}
 								}
@@ -267,10 +270,11 @@ void* handle_client(void* sck){
 		}else if( strcmp( buffer, "del") == 0){
 			fp_temp = fopen( "inbox/del.txt", "w");
 			memset(buffer, 0, sizeof(buffer));
-			size = recv(new_socket, buffer, BUF - 1, 0);
+			memset(fname, 0, sizeof(fname));
+			size = recv(new_socket, fname, 25, 0);
 			printf("Recieved message from user!\n%s\n", buffer);
 			memset(filename, 0, sizeof(filename));
-			snprintf(filename, sizeof(filename), "inbox/%s.txt", buffer);
+			snprintf(filename, sizeof(filename), "inbox/%s.txt", fname);
 			printf("Recieved message from user!\n");
 			fp = fopen(filename,"r");
 			if( fp_temp == NULL){
@@ -281,7 +285,7 @@ void* handle_client(void* sck){
 			}else{
 				send(new_socket, "x", 1, 0);
 				memset(buffer, 0, sizeof(buffer));
-				size = recv(new_socket, buffer, BUF - 1, 0);
+				size = recv(new_socket, buffer, 25, 0);
 				e_nr = atoi(buffer);
 				cnt = 0;
 				while( fgets( buffer, BUF - 1, fp)){
