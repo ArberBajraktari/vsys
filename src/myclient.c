@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "functions.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -14,6 +13,79 @@
 #define PORT 6543
 
 ///////////////////////////////////////////////////////////////////////////////
+
+
+void clean_stdin(void){
+	int c;
+	do{
+		c = getchar();
+	}while(c != '\n' && c != EOF);
+}
+
+void check_sender(char* uname){
+	while(1){
+		printf("Sender: ");
+		if( fgets( uname, 9, stdin) != NULL){
+			if( strlen( uname) != 8){
+				printf("Enter an username with 8 characters!\n");
+			}else{
+				break;
+			}
+		}else{
+			printf("Error reading the username");
+			break;
+		}
+	}
+}
+void check_reciever(char* uname){
+	while(1){
+		printf("Reciever: ");
+		if( fgets( uname, 9, stdin) != NULL){
+			if( strlen( uname) != 8){
+				printf("Enter an username with 8 characters!\n");
+			}else{
+				break;
+			}
+		}else{
+			printf("Error reading the username");
+			break;
+		}
+	}
+}
+
+void check_subject(char* sub){
+	while(1){
+		printf("Subject: ");
+		if( fgets( sub, 81, stdin) != NULL){
+			break;
+		}else{
+			printf("Error reading the username");
+			break;
+		}
+	}
+}
+
+void check_msg( char* msg){
+	char msg_temp[1024];
+	//reset variables if the last msg was longer than the current one
+	while(1){
+		printf("Message: ");
+		if( fgets( msg_temp, 1024, stdin) != NULL){
+			strcat(msg, msg_temp);
+			if( strstr( msg_temp, ".") != 0){
+				break;
+			}
+		}
+		else{
+			printf("Error reading the senders username\n");
+			break;
+		}
+	}
+}
+
+
+
+
 
 int main(int argc, char **argv)
 {
@@ -95,9 +167,9 @@ int main(int argc, char **argv)
 		// SEND DATA
 		send(create_socket, buffer, strlen(buffer), 0);
 		if( strcmp( buffer, "send\n") == 0){
-			check_username("Sender", sender);
+			check_sender( sender);
 			clean_stdin();
-			check_username("Reciever", reciever);
+			check_reciever( reciever);
 			clean_stdin();
 			check_subject( subject);
 			strtok( subject, "\n");
@@ -123,7 +195,7 @@ int main(int argc, char **argv)
 			// list ---------------------------------------------
 		}else if( strcmp( buffer, "list\n") == 0){
 			memset( buffer, 0, sizeof( buffer));
-			check_username("Username", reciever);
+			check_reciever( reciever);
 			clean_stdin();
 			send(create_socket, reciever, strlen(reciever), 0);
 			size = recv(create_socket, buffer, BUF - 1, 0);
@@ -144,7 +216,7 @@ int main(int argc, char **argv)
 			
 		}else if( strcmp( buffer, "read\n") == 0){
 			memset( buffer, 0, sizeof( buffer));
-			check_username("Username", reciever);
+			check_reciever( reciever);
 			clean_stdin();
 			send(create_socket, reciever, strlen(reciever), 0);
 			size = recv(create_socket, buffer, BUF - 1, 0);
@@ -172,7 +244,7 @@ int main(int argc, char **argv)
 			
 		}else if( strcmp( buffer, "del\n") == 0){
 			memset( buffer, 0, sizeof( buffer));
-			check_username("Username", reciever);
+			check_reciever( reciever);
 			clean_stdin();
 			send(create_socket, reciever, strlen(reciever), 0);
 			size = recv(create_socket, buffer, BUF - 1, 0);

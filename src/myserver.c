@@ -237,6 +237,7 @@ void* handle_client(void* sck){
 				e_nr = atoi(buffer);
 				printf("%d\n", e_nr);
 				cnt = 0;
+				
 				memset(buffer, 0, sizeof(buffer));
 				//fille is being read
 				pthread_mutex_lock( &lock);
@@ -368,3 +369,4 @@ void* handle_client(void* sck){
       close(new_socket);
       pthread_exit(0);
 }
+
