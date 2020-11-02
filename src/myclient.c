@@ -24,7 +24,7 @@ void clear_input(void){
 
 void snd_check(char* snd){
 	while(1){
-		printf("snd: ");
+		printf("Sender: ");
 		if( fgets( snd, 9, stdin) != NULL){
 			if( strlen( snd) != 8){
 				printf("Enter an username with 8 characters!\n");
@@ -32,14 +32,14 @@ void snd_check(char* snd){
 				break;
 			}
 		}else{
-			printf("Error reading the username");
+			printf("Error reading the Sender");
 			break;
 		}
 	}
 }
 void rcv_check(char* rcv){
 	while(1){
-		printf("rcv: ");
+		printf("Receiver: ");
 		if( fgets( rcv, 9, stdin) != NULL){
 			if( strlen( rcv) != 8){
 				printf("Enter an username with 8 characters!\n");
@@ -47,7 +47,7 @@ void rcv_check(char* rcv){
 				break;
 			}
 		}else{
-			printf("Error reading the username");
+			printf("Error reading the Reciever");
 			break;
 		}
 	}
@@ -55,11 +55,11 @@ void rcv_check(char* rcv){
 
 void sbj_check(char* sbj){
 	while(1){
-		printf("sbj: ");
+		printf("Subject: ");
 		if( fgets( sbj, 81, stdin) != NULL){
 			break;
 		}else{
-			printf("Error reading the username");
+			printf("Error reading the Subject");
 			break;
 		}
 	}
