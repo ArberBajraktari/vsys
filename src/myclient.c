@@ -61,7 +61,6 @@ int main(int argc, char **argv)
 
    ////////////////////////////////////////////////////////////////////////////
    // CREATE A CONNECTION
-   // https://man7.org/linux/man-pages/man2/connect.2.html
    if (connect(create_socket, 
                (struct sockaddr *)&address, 
                sizeof(address)) == 0)
@@ -72,7 +71,6 @@ int main(int argc, char **argv)
 
       /////////////////////////////////////////////////////////////////////////
       // RECEIVE DATA
-      // https://man7.org/linux/man-pages/man2/recv.2.html
       size = recv(create_socket, buffer, BUF - 1, 0);
       if (size > 0)
       {
@@ -82,7 +80,6 @@ int main(int argc, char **argv)
    }
    else
    {
-      // https://man7.org/linux/man-pages/man3/perror.3.html
       perror("Connect error - no server available");
       return EXIT_FAILURE;
    }
