@@ -93,7 +93,6 @@ int main(int argc, char **argv)
       {
 		//////////////////////////////////////////////////////////////////////
 		// SEND DATA
-		// https://man7.org/linux/man-pages/man2/send.2.html
 		send(create_socket, buffer, strlen(buffer), 0);
 		if( strcmp( buffer, "send\n") == 0){
 			check_username("Sender", sender);
