@@ -47,11 +47,16 @@ int main(int argc, char **argv)
    // https://man7.org/linux/man-pages/man3/inet_aton.3.html
    if (argc < 2)
    {
-      inet_aton("127.0.0.1", &address.sin_addr); 
+		inet_aton("127.0.0.1", &address.sin_addr); 
    }
-   else
+   else if( argc == 2)
    {
-      inet_aton(argv[1], &address.sin_addr);
+		inet_aton(argv[1], &address.sin_addr);
+   }else if( argc == 3){
+		inet_aton(argv[1], &address.sin_addr);
+		char *end;
+		long prt = strtol( argv[2], &end, 10);
+		address.sin_port = htons((uint16_t)prt);
    }
 
    ////////////////////////////////////////////////////////////////////////////
