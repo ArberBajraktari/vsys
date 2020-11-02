@@ -157,7 +157,6 @@ void* handle_client(void* sck){
 			pthread_mutex_lock( &lock);
 			snprintf(filename, sizeof(filename), "inbox/%s.txt", reciever);
 			fp = fopen(filename,"a");
-			pthread_mutex_unlock(&lock);
 			if( fp == NULL){
 				send(new_socket, "ERR\n", 4, 0);
 			}else{
@@ -173,6 +172,7 @@ void* handle_client(void* sck){
 				fclose(fp);
 				send(new_socket, "OK\n", 3, 0);
 			}
+			pthread_mutex_unlock(&lock);
 			
 		}else if( strcmp( buffer, "list") == 0){
 			memset(buffer, 0, sizeof(buffer));
@@ -182,11 +182,11 @@ void* handle_client(void* sck){
 			//lock the file
 			pthread_mutex_lock( &lock);
 			snprintf(filename, sizeof(filename), "inbox/%s.txt", fname);
-			pthread_mutex_unlock( &lock);
 			printf("Recieved message from user!\n");
 			fp = fopen(filename,"r");
 			if(fp == NULL){
 				send(new_socket, "0", 1, 0);
+				pthread_mutex_unlock( &lock);
 			}else{
 				cnt = 0;
 				//file is being read, other threads should not change it
