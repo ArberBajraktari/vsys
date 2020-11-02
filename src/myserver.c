@@ -162,11 +162,11 @@ void* client_cmn(void* sckt){
 				send(new_socket, "ERR\n", 4, 0);
 			}else{
 				fputs("New Email", fp);
-				fputs(";\nsndr:", fp);
+				fputs(";\nSender:", fp);
 				fputs( sndr, fp);
-				fputs(";\nsbj:", fp);
+				fputs(";\nSubject:", fp);
 				fputs( sbj, fp);
-				fputs(";\nmessage:", fp);
+				fputs(";\nMessage:", fp);
 				fputs( message, fp);
 				fputs(";\n", fp);
 				fflush(fp);
@@ -195,7 +195,7 @@ void* client_cmn(void* sckt){
 				while( fgets( buffer, BUF - 1, fp)){
 					if( strcmp( buffer, "New Email;\n") == 0){
 						cnt++;
-					}else if( strstr( buffer, "sbj:") != NULL){
+					}else if( strstr( buffer, "Subject:") != NULL){
 						sndr = strtok( buffer, ":");
 						sbj = strtok( NULL, ";");
 						strcat( tosend, sbj);
@@ -259,7 +259,7 @@ void* client_cmn(void* sckt){
 					//file is being read
 					pthread_mutex_lock( &lock);
 					while( fgets( buffer, BUF - 1, fp)){
-						if( strstr( buffer, "message:") != NULL || msg_count){
+						if( strstr( buffer, "Message:") != NULL || msg_count){
 							if( email_in == email_nmr){
 								//clear what is not needed
 								if( strstr( buffer, ":") != NULL){
