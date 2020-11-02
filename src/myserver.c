@@ -46,14 +46,18 @@ int main(int argc, char **argv)
    address.sin_addr.s_addr = INADDR_ANY;
    address.sin_port = htons(PORT);
 
-   if( argc < 2){
-	printf("Falsche Parametereingabe.\nBitte schreiben Sie die Mailsverzsichniss\n");
+   if( argc != 3){
+	printf("Falsche Parametereingabe.\nBitte schreiben Sie die Mailsverzsichniss und port\n");
       	return EXIT_FAILURE;
    }else{
 	if( strcmp(argv[1], "inbox") != 0){
 	    printf("Falsche Verzeichnisseingabe.\n");	
 	    return EXIT_FAILURE;
 	}
+	char *end;
+	long prt = strtol( argv[2], &end, 10);
+	address.sin_port = htons((uint16_t)prt);
+	
    }
    
 
