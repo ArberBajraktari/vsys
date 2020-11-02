@@ -91,7 +91,7 @@ void msg_check( char* msg){
 int main(int argc, char **argv)
 {
 	int create_socket;
-	char buffer[BUF] = "", send[BUF] = "";
+	char buffer[BUF] = "", tosend[BUF] = "";
 	char snd[9], rcv[9], sbj[81], msg[BUF]="";
 	struct sockaddr_in address;
 	int size;
@@ -127,8 +127,8 @@ int main(int argc, char **argv)
 		inet_aton(argv[1], &address.sin_addr);
    }else if( argc == 3){
 		inet_aton(argv[1], &address.sin_addr);
-		char *fin;
-		long prt = strtol( argv[2], &fin, 10);
+		char *end;
+		long prt = strtol( argv[2], &end, 10);
 		address.sin_port = htons((uint16_t)prt);
    }
 
@@ -161,9 +161,11 @@ int main(int argc, char **argv)
    {
       printf("Send message: ");
       memset( buffer, 0, sizeof( buffer));
-      memset( send, 0, sizeof( send));
+      memset( tosend, 0, sizeof( tosend));
       if (fgets(buffer, BUF, stdin) != NULL)
       {
+		//////////////////////////////////////////////////////////////////////
+		// SEND DATA
 		send(create_socket, buffer, strlen(buffer), 0);
 		if( strcmp( buffer, "send\n") == 0){
 			snd_check( snd);
@@ -174,17 +176,16 @@ int main(int argc, char **argv)
 			strtok( sbj, "\n");
 			msg_check( msg);
 
-			strcat( send, snd);
-			strcat( send, ";");
-			strcat( send, rcv);
-			strcat( send, ";");
-			strcat( send, sbj);
-			strcat( send, ";");
-			strcat( send, msg);
-			send(create_socket, send, strlen(send), 0);
+			strcat( tosend, snd);
+			strcat( tosend, ";");
+			strcat( tosend, rcv);
+			strcat( tosend, ";");
+			strcat( tosend, sbj);
+			strcat( tosend, ";");
+			strcat( tosend, msg);
+			send(create_socket, tosend, strlen(tosend), 0);
 			memset(buffer, 0, sizeof(buffer));
 			size = recv(create_socket, buffer, BUF - 1, 0);
-			//show what happened
 			if (size > 0)
 			{
 				printf("%s", buffer);
@@ -206,6 +207,7 @@ int main(int argc, char **argv)
 				}else{
 					printf("%s has %s Emails.\n", rcv, buffer);
 					size = recv(create_socket, buffer, BUF - 1, 0);
+					// print sbjs
 					printf( "%s", buffer);
 				}
 
