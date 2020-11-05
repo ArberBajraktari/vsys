@@ -122,7 +122,6 @@ int main(int argc, char **argv)
 			
 			// list ---------------------------------------------
 		}else if( strcmp( buffer, "list\n") == 0){
-			printf("null\n");
 			memset( buffer, 0, sizeof( buffer));
 			check_username("Username", reciever);
 			clean_stdin();
