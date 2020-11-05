@@ -122,11 +122,13 @@ int main(int argc, char **argv)
 			
 			// list ---------------------------------------------
 		}else if( strcmp( buffer, "list\n") == 0){
+			printf("null\n");
 			memset( buffer, 0, sizeof( buffer));
 			check_username("Username", reciever);
 			clean_stdin();
 			send(create_socket, reciever, strlen(reciever), 0);
 			size = recv(create_socket, buffer, BUF - 1, 0);
+			
 			if (size > 0)
 			{
 				if( strcmp( buffer, "0") == 0){

@@ -46,16 +46,13 @@ int main(int argc, char **argv)
    address.sin_addr.s_addr = INADDR_ANY;
    address.sin_port = htons(PORT);
 
-   if( argc != 3){
-	printf("Falsche Parametereingabe.\nBitte schreiben Sie die Mailsverzsichniss und port\n");
+   if( argc != 2){
+	printf("Falsche Parametereingabe.\nBitte schreiben Sie die port\n");
       	return EXIT_FAILURE;
    }else{
-	if( strcmp(argv[1], "inbox") != 0){
-	    printf("Falsche Verzeichnisseingabe.\n");	
-	    return EXIT_FAILURE;
-	}
+	
 	char *end;
-	long prt = strtol( argv[2], &end, 10);
+	long prt = strtol( argv[1], &end, 10);
 	address.sin_port = htons((uint16_t)prt);
 	
    }
@@ -179,6 +176,7 @@ void* handle_client(void* sck){
 			memset(to_send, 0, sizeof(to_send));
 			memset(fname, 0, sizeof(fname));
 			size = recv(new_socket, fname, 25, 0);
+			printf("fname is: %s\n", fname);
 			//lock the file
 			pthread_mutex_lock( &lock);
 			snprintf(filename, sizeof(filename), "inbox/%s.txt", fname);
@@ -190,7 +188,6 @@ void* handle_client(void* sck){
 			}else{
 				cnt = 0;
 				//file is being read, other threads should not change it
-				pthread_mutex_lock( &lock);
 				while( fgets( buffer, BUF - 1, fp)){
 					if( strcmp( buffer, "New Email;\n") == 0){
 						cnt++;
